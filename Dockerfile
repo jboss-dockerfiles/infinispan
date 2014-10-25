@@ -2,7 +2,7 @@
 FROM jboss/base-jdk:7
 
 # Set the INFINISPAN_SERVER_HOME env variable
-ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan
+ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_SERVER_VERSION env variable
 ENV INFINISPAN_SERVER_VERSION 7.0.0.CR1
