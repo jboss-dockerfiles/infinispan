@@ -1,9 +1,9 @@
 # Infinispan server Docker image
 
-Infinispan
-==========
+Infinispan Server
+=================
 
-This is an example Dockerfile with [Infinispan server](http://infinispan.org/).
+This is an example Dockerfile with [Infinispan](http://infinispan.org/) server.
 
 ## Usage
 
