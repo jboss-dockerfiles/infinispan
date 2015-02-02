@@ -1,7 +1,7 @@
 FROM jboss/wildfly:latest
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 7.0.0.Final
+ENV INFINISPAN_VERSION 7.1.0.Final
 
 RUN cd $HOME && curl http://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-as-embedded-modules-$INFINISPAN_VERSION.zip | bsdtar -xf - -C $HOME/wildfly/modules/system/layers/base
 
