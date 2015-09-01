@@ -1,11 +1,11 @@
-# Use latest jboss/base-jdk:7 image as the base
-FROM jboss/base-jdk:7
+# Use latest jboss/base-jdk:8 image as the base
+FROM jboss/base-jdk:8
 
 # Set the INFINISPAN_SERVER_HOME env variable
 ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 7.2.0.Final
+ENV INFINISPAN_VERSION 8.0.0.Final
 
 # Download and unzip Infinispan server
 RUN cd $HOME && curl http://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-server-$INFINISPAN_VERSION-bin.zip | bsdtar -xf - && mv $HOME/infinispan-server-$INFINISPAN_VERSION $HOME/infinispan-server && chmod +x /opt/jboss/infinispan-server/bin/standalone.sh
