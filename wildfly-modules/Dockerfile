@@ -1,4 +1,4 @@
-FROM jboss/wildfly:latest
+FROM jboss/wildfly:9.0.1.Final
 
 # Set the INFINISPAN_VERSION env variable
 ENV INFINISPAN_VERSION 8.0.0.Final
