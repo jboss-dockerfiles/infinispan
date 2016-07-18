@@ -8,8 +8,7 @@ ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 ENV INFINISPAN_VERSION 8.2.0.Final
 
 # Download and unzip Infinispan server
-RUN cd $HOME && curl http://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-server-$INFINISPAN_VERSION-bin.zip | bsdtar -xf - && mv $HOME/infinispan-server-$INFINISPAN_VERSION $HOME/infinispan-server && chmod +x /opt/jboss/infinispan-server/bin/standalone.sh
-
+RUN cd $HOME && curl http://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-server-$INFINISPAN_VERSION-bin.zip | bsdtar -xf - && mv $HOME/infinispan-server-$INFINISPAN_VERSION $HOME/infinispan-server && chmod +x /opt/jboss/infinispan-server/bin/*.sh
 # Expose Infinispan server  ports 
 EXPOSE 8080 8181 9990 11211 11222 
 
