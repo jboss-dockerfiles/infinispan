@@ -43,7 +43,7 @@ function stop_server {
 
 function cleanup {
   echo "==== Deleting build results ===="
-  sudo docker rm $SERVER_CONTAINER_ID
+  sudo docker rm infinispan-server-ci
   sudo docker rmi infinispan-server
   sudo docker rmi infinispan-modules
 }
