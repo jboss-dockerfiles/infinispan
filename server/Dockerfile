@@ -11,12 +11,28 @@ ENV MGMT_USER admin
 
 ENV MGMT_PASS admin
 
+# Ensure signals are forwarded to the JVM process correctly for graceful shutdown
+ENV LAUNCH_JBOSS_IN_BACKGROUND true
+
 # Server download location
 ENV DISTRIBUTION_URL https://repo1.maven.org/maven2/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip
 
 # Download and extract the Infinispan Server
 RUN INFINISPAN_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUTION_URL && sha1sum /tmp/server.zip | grep $INFINISPAN_SHA \
     && unzip -q /tmp/server.zip -d $HOME && mv $HOME/infinispan-server-* $HOME/infinispan-server && rm /tmp/server.zip
+
+# For Openshift
+USER root
+
+RUN chgrp -R 0 /opt/jboss/infinispan-server/
+
+RUN chmod -R g+rw /opt/jboss/infinispan-server/
+
+RUN find /opt/jboss/infinispan-server/ -type d -exec chmod g+x {} +
+
+ENV HOME /opt/jboss/
+
+USER 1000
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin
