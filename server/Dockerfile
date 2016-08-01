@@ -18,19 +18,15 @@ ENV LAUNCH_JBOSS_IN_BACKGROUND true
 ENV DISTRIBUTION_URL https://repo1.maven.org/maven2/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip
 
 # Download and extract the Infinispan Server
-RUN INFINISPAN_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUTION_URL && sha1sum /tmp/server.zip | grep $INFINISPAN_SHA \
-    && unzip -q /tmp/server.zip -d $HOME && mv $HOME/infinispan-server-* $HOME/infinispan-server && rm /tmp/server.zip
-
-# For Openshift
 USER root
 
-RUN chgrp -R 0 /opt/jboss/infinispan-server/
-
-RUN chmod -R g+rw /opt/jboss/infinispan-server/
-
-RUN find /opt/jboss/infinispan-server/ -type d -exec chmod g+x {} +
-
 ENV HOME /opt/jboss/
+
+RUN INFINISPAN_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUTION_URL && sha1sum /tmp/server.zip | grep $INFINISPAN_SHA \
+    && unzip -q /tmp/server.zip -d $HOME && mv $HOME/infinispan-server-* $HOME/infinispan-server && rm /tmp/server.zip \ 
+    && chown -R 1000.0 /opt/jboss/infinispan-server/ \
+    && chmod -R g+rw /opt/jboss/infinispan-server/ \
+    && find /opt/jboss/infinispan-server/ -type d -exec chmod g+x {} +
 
 USER 1000
 
