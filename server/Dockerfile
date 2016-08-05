@@ -36,4 +36,4 @@ COPY docker-entrypoint.sh /usr/local/bin
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Expose Infinispan server  ports 
-EXPOSE 7600 8080 8181 9990 11211 11222 57600
+EXPOSE 7600 8080 8181 8888 9990 11211 11222 57600
