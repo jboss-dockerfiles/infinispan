@@ -4,8 +4,8 @@ TEST_RESULT=0
 IMAGE_TO_DELETE=""
 OPENSHIFT_COMPONENT_NAME=infinispan-ci-test
 
-OSE_MAIN_VERSION=v1.3.0-alpha.2
-OSE_SHA1_VERSION=983578e
+OSE_MAIN_VERSION=v1.3.0-alpha.3
+OSE_SHA1_VERSION=7998ae4
 
 function download_oc_client {
   echo "==== Installing OC Client ===="
@@ -89,7 +89,7 @@ function build_images {
   echo "==== Building images ===="
   login_as_admin
   ./oc project default
-  REGISTRY_IP=`oc get svc/docker-registry -o yaml | grep clusterIP: | awk '{print $2}'`
+  REGISTRY_IP=`./oc get svc/docker-registry -o yaml | grep clusterIP: | awk '{print $2}'`
   IMAGE="${REGISTRY_IP}:5000/myproject/$OPENSHIFT_COMPONENT_NAME"
   login_as_developer
   sudo docker build --no-cache --force-rm -t $IMAGE ../server
