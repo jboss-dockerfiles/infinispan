@@ -22,7 +22,7 @@ then
   sed -i  "s/\(remote security-realm=\"ManagementRealm\"\)/\1 username=\"$MGMT_USER\"/" $SERVER/domain/configuration/host-slave.xml
   exec $LAUNCHER --host-config host-slave.xml -Djboss.domain.master.address=$DC_PORT_9990_TCP_ADDR $BIND_OPTS "$@"
 else
-  if [ $# -ne 0 ] && [ -f $SERVER/standalone/configuration/$1.xml ]; then CONFIG=$1; shift; fi
+  if [ $# -ne 0 ] && ([ -f $SERVER/standalone/configuration/$1.xml ] || [ -f $1.xml ]); then CONFIG=$1; shift; fi
   exec $LAUNCHER -c $CONFIG.xml $BIND_OPTS "$@"
 fi
 
