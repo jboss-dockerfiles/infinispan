@@ -5,7 +5,7 @@ FROM jboss/base-jdk:8
 ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 8.2.4.Final
+ENV INFINISPAN_VERSION 8.2.5.Final
 
 ENV MGMT_USER admin
 
