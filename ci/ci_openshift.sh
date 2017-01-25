@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TEST_RESULT=0
-IMAGE_TO_DELETE=""
+IMAGE_INSIDE_OPENSHIFT=""
 OPENSHIFT_COMPONENT_NAME=infinispan-ci-test
 
 OSE_MAIN_VERSION=v1.3.0-alpha.3
@@ -34,7 +34,7 @@ function add_building_permission {
 
 function create_application {
   echo "==== Creating Infinispan application ===="
-  ./oc new-app $OPENSHIFT_COMPONENT_NAME
+  ./oc new-app $OPENSHIFT_COMPONENT_NAME --docker-image="$IMAGE_INSIDE_OPENSHIFT"
   for i in `seq 1 180`;
   do
     sleep 1s
@@ -80,8 +80,8 @@ function login_as_developer {
 function stop_cluster {
   echo "==== Killing the cluster ===="
   ./oc cluster down
-  if [ ! -z "$IMAGE_TO_DELETE" ]; then
-    sudo docker rmi $IMAGE_TO_DELETE
+  if [ ! -z "$IMAGE_INSIDE_OPENSHIFT" ]; then
+    sudo docker rmi $IMAGE_INSIDE_OPENSHIFT
   fi
 }
 
@@ -95,7 +95,7 @@ function build_images {
   sudo docker build --no-cache --force-rm -t $IMAGE ../server
   sudo docker login -u $(./oc whoami) -e nobody@redhat.com -p $(./oc whoami -t) ${REGISTRY_IP}:5000
   sudo docker push ${IMAGE}
-  IMAGE_TO_DELETE=$IMAGE
+  IMAGE_INSIDE_OPENSHIFT=$IMAGE
 }
 
 trap stop_cluster EXIT SIGTERM
