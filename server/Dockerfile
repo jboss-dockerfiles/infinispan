@@ -5,7 +5,7 @@ FROM jboss/base-jdk:8
 ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 8.2.5.Final
+ENV INFINISPAN_VERSION 8.2.6.Final
 
 ENV MGMT_USER admin
 
@@ -15,7 +15,7 @@ ENV MGMT_PASS admin
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
 # Server download location
-ENV DISTRIBUTION_URL https://repo1.maven.org/maven2/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip
+ENV DISTRIBUTION_URL https://repository.jboss.org/nexus/content/repositories/releases/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip 
 
 # Download and extract the Infinispan Server
 USER root
