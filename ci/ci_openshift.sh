@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -x
+
 TEST_RESULT=0
 IMAGE_INSIDE_OPENSHIFT=""
 OPENSHIFT_COMPONENT_NAME=infinispan-ci-test
 
-OSE_MAIN_VERSION=v1.3.0-alpha.3
-OSE_SHA1_VERSION=7998ae4
+OSE_MAIN_VERSION=v1.4.1
+OSE_SHA1_VERSION=3f9807a
 
 function download_oc_client {
   echo "==== Installing OC Client ===="
@@ -14,8 +16,8 @@ function download_oc_client {
   else
     wget -q -N https://github.com/openshift/origin/releases/download/$OSE_MAIN_VERSION/openshift-origin-client-tools-$OSE_MAIN_VERSION-$OSE_SHA1_VERSION-linux-64bit.tar.gz
     tar -zxf openshift-origin-client-tools-$OSE_MAIN_VERSION-$OSE_SHA1_VERSION-linux-64bit.tar.gz
-    cp openshift-origin-client-tools-$OSE_MAIN_VERSION-$OSE_SHA1_VERSION-linux-64bit/oc .
-    rm -rf openshift-origin-client-tools-$OSE_MAIN_VERSION-$OSE_SHA1_VERSION-linux-64bit
+    cp openshift-origin-client-tools-$OSE_MAIN_VERSION+$OSE_SHA1_VERSION-linux-64bit/oc .
+    rm -rf openshift-origin-client-tools-$OSE_MAIN_VERSION+$OSE_SHA1_VERSION-linux-64bit
     rm -rf openshift-origin-client-tools-$OSE_MAIN_VERSION-$OSE_SHA1_VERSION-linux-64bit.tar.gz
   fi
 }
