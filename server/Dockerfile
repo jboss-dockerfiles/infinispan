@@ -32,6 +32,8 @@ USER 1000
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin
+COPY is_healthy.sh /usr/local/bin
+COPY is_running.sh /usr/local/bin
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
