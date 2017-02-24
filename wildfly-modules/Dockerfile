@@ -1,9 +1,9 @@
 FROM jboss/wildfly:9.0.1.Final
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 9.0.0.Alpha4
+ENV INFINISPAN_VERSION 9.0.0.CR2
 
-RUN cd $HOME && curl http://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-as-embedded-modules-$INFINISPAN_VERSION.zip | bsdtar -xf - -C $HOME/wildfly/modules/system/layers/base
+RUN cd $HOME && curl http://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-wildfly-modules-$INFINISPAN_VERSION.zip | bsdtar -xf - -C $HOME/wildfly/modules/system/layers/base
 
 # Set the default command to run on boot
 # This will boot WildFly with Infinispan modules in the standalone mode and bind to all interface
