@@ -9,7 +9,11 @@ ENV INFINISPAN_VERSION 9.0.0.CR3
 
 ENV MGMT_USER admin
 
-ENV MGMT_PASS admin
+ENV MGMT_PASS admin 
+
+ENV APP_USER user
+
+ENV APP_PASS changeme
 
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
