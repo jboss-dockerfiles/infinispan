@@ -27,6 +27,18 @@ function start_cluster {
   ./oc cluster up
 }
 
+function wait_for_ispn() {
+  until `./oc exec -t $(get_pod) -- /opt/jboss/infinispan-server/bin/ispn-cli.sh -c ':read-attribute(name=server-state)' | grep -q running`; do
+    sleep 3
+    echo "Waiting for the server to start..."
+  done
+}
+
+function get_pod {
+ local pod=$(./oc get pods --selector=app=$OPENSHIFT_COMPONENT_NAME | grep Running | tail -n 1 | awk '{print $1}')
+ echo $pod
+}
+
 function add_building_permission {
   echo "==== Adding image push permissions ===="
   ./oc adm policy add-role-to-user system:registry developer
@@ -37,16 +49,7 @@ function add_building_permission {
 function create_application {
   echo "==== Creating Infinispan application ===="
   ./oc new-app $OPENSHIFT_COMPONENT_NAME --docker-image="$IMAGE_INSIDE_OPENSHIFT"
-  for i in `seq 1 180`;
-  do
-    sleep 1s
-    echo "Checking logs..."
-    ./oc get pods --selector=app=$OPENSHIFT_COMPONENT_NAME | tail -n 1 | grep Running
-    if [ $? -eq 0 ]; then
-      echo "Server started successfully"
-      return
-    fi
-  done
+  wait_for_ispn
 }
 
 function expose_route {
