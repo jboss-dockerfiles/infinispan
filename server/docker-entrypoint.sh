@@ -2,6 +2,14 @@
 
 set -e
 
+addMgmtUser() {
+  $SERVER/bin/add-user.sh -u $MGMT_USER -p $MGMT_PASS
+}
+
+addAppUser()  {
+  $SERVER/bin/add-user.sh -a -u $APP_USER -p $APP_PASS
+}
+
 # Based on https://github.com/fabric8io-images/run-java-sh/blob/master/fish-pepper/run-java-sh/fp-files/container-limits
 ceiling() {
   awk -vnumber="$1" -vdiv="$2" '
@@ -53,6 +61,8 @@ SERVER_CONFIGURATION="clustered.xml"
 # Xms should always be set: https://developers.redhat.com/blog/2014/07/15/dude-wheres-my-paas-memory-tuning-javas-footprint-in-openshift-part-1/
 JAVA_OPTS="-Xms64m -Djava.net.preferIPv4Stack=true"
 PERCENT_OF_MEMORY_FOR_MX=70
+
+addAppUser
 
 for i in "$@"
 do
@@ -135,10 +145,9 @@ then
   fi
 fi
 
-
 if [ "$RUN_TYPE" = "DOMAIN_CONTROLLER" ]
 then
-  $SERVER/bin/add-user.sh -u $MGMT_USER -p $MGMT_PASS
+  addMgmtUser
   LAUNCHER=$SERVER/bin/domain.sh
   exec $LAUNCHER --host-config host-master.xml $BIND_OPTS $SERVER_OPTIONS
 elif [ "$RUN_TYPE" == "HOST_CONTROLLER" ]

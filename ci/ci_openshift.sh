@@ -58,8 +58,8 @@ function expose_route {
 function perform_test_via_rest {
   echo "==== Performing REST test ===="
   ISPN_IP=`./oc describe svc/$OPENSHIFT_COMPONENT_NAME | grep IP: | awk '{print $2}'`
-  curl -X POST -H 'Content-type: text/plain' -d 'test' http://$ISPN_IP:8080/rest/default/1
-  VALUE_RETURNED=$(curl -X GET -H 'Content-type: text/plain' http://$ISPN_IP:8080/rest/default/1)
+  curl -v -u user:changeme -X POST -H 'Content-type: text/plain' -d 'test' http://$ISPN_IP:8080/rest/default/1
+  VALUE_RETURNED=$(curl -v -u user:changeme -X GET -H 'Content-type: text/plain' http://$ISPN_IP:8080/rest/default/1)
   if [ $VALUE_RETURNED == 'test' ]; then
     echo "REST test Passed"
     TEST_RESULT=0
