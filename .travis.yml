@@ -1,0 +1,16 @@
+language: bash
+
+sudo: required
+
+services:
+  - docker
+
+before_script: 
+ - sudo mount --make-shared /
+ - sudo sed 's/DOCKER_OPTS="/DOCKER_OPTS="--insecure-registry 172.30.0.0\/16 / ' -i /etc/default/docker
+ - cd ci && ./ci_check.sh
+ - sudo service docker restart
+
+script:
+ - ./ci_openshift.sh
+

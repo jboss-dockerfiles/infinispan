@@ -1,6 +1,8 @@
 Infinispan Docker Images 
 ========================
 
+[![Build Status](https://travis-ci.org/jboss-dockerfiles/infinispan.svg?branch=master)](https://travis-ci.org/jboss-dockerfiles/infinispan/)
+
 [Infinispan](http://infinispan.org/) is an open source data grid platform. 
 
 This repository contains Docker imgaes for different flavours of Infinispan:
