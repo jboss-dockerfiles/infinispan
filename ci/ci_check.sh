@@ -15,7 +15,7 @@ function build_images {
 
 function start_server {
   echo "==== Starting the server ===="
-  SERVER_CONTAINER_ID=`sudo docker run -d --name infinispan-server-ci infinispan-server -Djboss.default.jgroups.stack=tcp`
+  SERVER_CONTAINER_ID=`sudo docker run -d --name infinispan-server-ci -e "APP_USER=user" -e "APP_PASS=changeme" infinispan-server -Djboss.default.jgroups.stack=tcp`
   if [ -z "$SERVER_CONTAINER_ID" ]; then
     echo "Could not create the container"
     exit 1

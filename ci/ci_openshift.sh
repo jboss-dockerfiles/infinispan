@@ -48,7 +48,10 @@ function add_building_permission {
 
 function create_application {
   echo "==== Creating Infinispan application ===="
-  ./oc new-app $OPENSHIFT_COMPONENT_NAME --docker-image="$IMAGE_INSIDE_OPENSHIFT"
+  ./oc new-app $OPENSHIFT_COMPONENT_NAME \
+      --docker-image="$IMAGE_INSIDE_OPENSHIFT" \
+      -e "APP_USER=user" \
+      -e "APP_PASS=changeme"
   wait_for_ispn
 }
 
