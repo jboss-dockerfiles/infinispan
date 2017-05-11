@@ -49,9 +49,14 @@ addMgmtUser() {
 addAppUser()  {
   local usr=$APP_USER
   local pass=$APP_PASS
+  local roles=$APP_ROLES
 
   if is_not_empty $usr && is_not_empty $pass; then
-    $SERVER/bin/add-user.sh -a -u $usr -p $pass
+    if is_not_empty $roles; then
+      $SERVER/bin/add-user.sh -a -u $usr -p $pass -g $roles
+    else
+      $SERVER/bin/add-user.sh -a -u $usr -p $pass
+    fi
   else
     echo "######################################################################################"
     echo "# No application user and/or password provided.                                      #"
