@@ -5,6 +5,9 @@
 To be able to connect to any of the Infinispan server Docker images, authentication is necessary.
 So, no matter how the image is started, `APP_USER` and `APP_PASS` environment variables need to be provided in order to interact with any application endpoints exposed by the image. 
 
+Optionally, `APP_ROLES` environment variable can be passed in which provides specific security roles to be associated with the user.
+The value of this environment variable is expected to be a comma-separated list of roles for the user.
+
 The management console exposed by the Infinispan server Docker images also requires authentication.
 In this case, to be able to access the console, `MGMT_USER` and `MGMT_PASS` environment variables need to be provided.
 Even if not accessing the console, these environment properties are required if creating a cluster in the domain mode. 
