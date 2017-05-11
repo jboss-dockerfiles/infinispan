@@ -2,12 +2,91 @@
 
 set -e
 
+is_not_empty() {
+    local var=$1
+
+    [[ -n $var ]]
+}
+
 addMgmtUser() {
-  $SERVER/bin/add-user.sh -u $MGMT_USER -p $MGMT_PASS
+  local usr=$MGMT_USER
+  local pass=$MGMT_PASS
+
+  if is_not_empty $usr && is_not_empty $pass; then
+    $SERVER/bin/add-user.sh -u $usr -p $pass
+  else
+    echo "######################################################################################"
+    echo "# Using domain mode but no management user and/or password provided.                 #"
+    echo "# Infinispan servers won't be able to cluster without these credentials being set.   #"
+    echo "#                                                                                    #"
+    echo "# You can provide management user and password details via environment variables.    #"
+    echo "#                                                                                    #"
+    echo "# Docker run example:                                                                #"
+    echo "#     docker run ... -e \"MGMT_USER=user\" -e \"MGMT_PASS=changeme\" ...             #"
+    echo "#                                                                                    #"
+    echo "# Dockerfile example:                                                                #"
+    echo "#     ENV MGMT_USER admin                                                            #"
+    echo "#     ENV MGMT_PASS admin                                                            #"
+    echo "#                                                                                    #"
+    echo "# Kubernetes Example:                                                                #"
+    echo "#     spec:                                                                          #"
+    echo "#       containers:                                                                  #"
+    echo "#       - args:                                                                      #"
+    echo "#         image: jboss/infinispan-server:...                                         #"
+    echo "#         ...                                                                        #"
+    echo "#         env:                                                                       #"
+    echo "#         - name: MGMT_USER                                                          #"
+    echo "#           value: \"admin\"                                                         #"
+    echo "#         - name: MGMT_PASS                                                          #"
+    echo "#           value: \"admin\"                                                         #"
+    echo "#                                                                                    #"
+    echo "# OpenShift client example:                                                          #"
+    echo "#     oc new-app ... -e \"MGMT_USER=user\" -e \"MGMT_PASS=changeme\" ...             #"
+    echo "######################################################################################"
+  fi
 }
 
 addAppUser()  {
-  $SERVER/bin/add-user.sh -a -u $APP_USER -p $APP_PASS
+  local usr=$APP_USER
+  local pass=$APP_PASS
+  local roles=$APP_ROLES
+
+  if is_not_empty $usr && is_not_empty $pass; then
+    if is_not_empty $roles; then
+      $SERVER/bin/add-user.sh -a -u $usr -p $pass -g $roles
+    else
+      $SERVER/bin/add-user.sh -a -u $usr -p $pass
+    fi
+  else
+    echo "######################################################################################"
+    echo "# No application user and/or password provided.                                      #"
+    echo "# You will not be able to access Infinispan servers without providing credentials.   #"
+    echo "#                                                                                    #"
+    echo "# You can provide application user and password details via environment variables.   #"
+    echo "#                                                                                    #"
+    echo "# Docker run example:                                                                #"
+    echo "#     docker run ... -e \"APP_USER=user\" -e \"APP_PASS=changeme\" ...               #"
+    echo "#                                                                                    #"
+    echo "# Dockerfile example:                                                                #"
+    echo "#     ENV APP_USER user                                                              #"
+    echo "#     ENV APP_PASS changeme                                                          #"
+    echo "#                                                                                    #"
+    echo "# Kubernetes example:                                                                #"
+    echo "#     spec:                                                                          #"
+    echo "#       containers:                                                                  #"
+    echo "#       - args:                                                                      #"
+    echo "#         image: jboss/infinispan-server:...                                         #"
+    echo "#         ...                                                                        #"
+    echo "#         env:                                                                       #"
+    echo "#         - name: APP_USER                                                           #"
+    echo "#           value: \"user\"                                                          #"
+    echo "#         - name: APP_PASS                                                           #"
+    echo "#           value: \"changeme\"                                                      #"
+    echo "#                                                                                    #"
+    echo "# OpenShift client example:                                                          #"
+    echo "#     oc new-app ... -e \"APP_USER=user\" -e \"APP_PASS=changeme\" ...               #"
+    echo "######################################################################################"
+  fi
 }
 
 # Based on https://github.com/fabric8io-images/run-java-sh/blob/master/fish-pepper/run-java-sh/fp-files/container-limits
