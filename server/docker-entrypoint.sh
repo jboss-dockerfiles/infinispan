@@ -108,10 +108,10 @@ case $i in
     shift
     ;;
     *)
-    if [ -f $SERVER/standalone/configuration/$i.xml ]
+    if [ -f "$SERVER/standalone/configuration/$i.xml" ]
     then
       SERVER_CONFIGURATION="$i.xml"
-    elif [ -f $SERVER/standalone/configuration/$i ]
+    elif [ -f "$SERVER/standalone/configuration/$i" ]
     then
       SERVER_CONFIGURATION="$i"
     else
