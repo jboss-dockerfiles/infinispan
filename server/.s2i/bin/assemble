@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+export CONFIGURATION_PATH=${CONFIGURATION_PATH:-"/opt/jboss/infinispan-server/standalone/configuration"}
+
+echo "---> Coping configuration files to ${CONFIGURATION_PATH} ..."
+cp -vRf /tmp/src/*.xml ${CONFIGURATION_PATH}

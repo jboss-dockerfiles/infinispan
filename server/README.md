@@ -65,6 +65,22 @@ And then each host controller can be started as:
 
 The Server Management Console listens on the domain controller on port 9990. Credentials are admin/admin.
 
+## Source to image (S2I)
+
+Infinispan Docker image uses S2I to supply configuration XML file to the server. The scripts copy content of user directory
+into `/opt/jboss/infinispan-server/standalone/configuration`. The destination directory can be changed using `CONFIGURATION_PATH`
+environmental variable.
+
+The easiest way to run Infinispan with custom configuration inside OpenShift is to invoke the following command:
+
+    oc new-app jboss/infinispan-server~https://github.com/<username or organization>/<repository with xml in its root>.git
+
+There are special parameters to specify the context directory, branch or SHA1 of the repository. For more information
+please refer to [OpenShift S2I manual](https://github.com/openshift/source-to-image).
+
+Providing `clustered.xml` file is the simplest way to start (since this is the default configuration triggered by entrypoint scripts).
+However it is advised to use custom file names and run them using using container args.
+
 ## Extending the image
 
     FROM jboss/infinispan-server
@@ -73,7 +89,6 @@ The Server Management Console listens on the domain controller on port 9990. Cre
 Then you can build the image:
 
     docker build .
-
 
 ## Source
 
