@@ -20,6 +20,17 @@ ENV LAUNCH_JBOSS_IN_BACKGROUND true
 # Server download location
 ENV DISTRIBUTION_URL https://repository.jboss.org/nexus/content/repositories/releases/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip
 
+# Labels
+LABEL name="Infinispan Server" \
+      version="$INFINISPAN_VERSION" \
+      release="$INFINISPAN_VERSION" \
+      architecture="x86_64" \
+      io.k8s.description="Provides a scalable in-memory distributed database designed for fast access to large volumes of data." \
+      io.k8s.display-name="Infinispan Server" \
+      io.openshift.expose-services="8080:http,11222:hotrod" \
+      io.openshift.tags="datagrid,java,jboss" \
+      io.openshift.s2i.scripts-url="image:///usr/local/s2i/bin"
+
 # Download and extract the Infinispan Server
 USER root
 
@@ -37,6 +48,8 @@ USER 1000
 COPY docker-entrypoint.sh /usr/local/bin
 COPY is_healthy.sh /usr/local/bin
 COPY is_running.sh /usr/local/bin
+# S2I Scripts
+COPY .s2i /usr/local/s2i
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

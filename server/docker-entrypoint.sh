@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# S2I build scripts do not override Docker Entrypoints (see https://github.com/openshift/source-to-image/issues/475#issuecomment-215891632),
+# thus we need to check whether or not we are running a build or a standard container.
+echo "Entry point arguments: $@"
+if [[ $@ == *"/usr/local/s2i/bin/assemble"* ]]
+then
+    echo "---> Performing S2I build... Skipping server startup"
+    exec "$@"
+    exit $?
+fi
+
 set -e
 
 addMgmtUser() {
@@ -108,10 +118,10 @@ case $i in
     shift
     ;;
     *)
-    if [ -f $SERVER/standalone/configuration/$i.xml ]
+    if [ -f "$SERVER/standalone/configuration/$i.xml" ]
     then
       SERVER_CONFIGURATION="$i.xml"
-    elif [ -f $SERVER/standalone/configuration/$i ]
+    elif [ -f "$SERVER/standalone/configuration/$i" ]
     then
       SERVER_CONFIGURATION="$i"
     else
