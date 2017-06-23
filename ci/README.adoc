@@ -9,9 +9,9 @@ Just invoke this command:
 .Run CI build
 [source,bash]
 ----
-./ci_check.sh
+./ci_check.sh && ci_openshift.sh
 ----
 
 = Test automation
 
-Tests are automatically performed by Infinispan CI server - [TeamCity](http://ci.infinispan.org)
+Tests are automatically performed by Travis CI server
