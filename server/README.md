@@ -3,20 +3,30 @@
 ## Configuring authentication
 
 To be able to connect to any of the Infinispan server Docker images, authentication is necessary.
-So, no matter how the image is started, `APP_USER` and `APP_PASS` environment variables need to be provided in order to interact with any application endpoints exposed by the image. 
+The easiest way to create a new user (with specified password) before starting the server is to specify `APP_USER`
+and `APP_PASS` environment variables or pass `-au` (for user name) and `-au` (for password) switches.
 
-Optionally, `APP_ROLES` environment variable can be passed in which provides specific security roles to be associated with the user.
-The value of this environment variable is expected to be a comma-separated list of roles for the user.
+Optionally, `APP_ROLES` environment variable (or `-ar` switch) can be passed in which provides specific security roles 
+to be associated with the user. The value of this environment variable is expected to be a comma-separated
+list of roles for the user.
 
 The management console exposed by the Infinispan server Docker images also requires authentication.
-In this case, to be able to access the console, `MGMT_USER` and `MGMT_PASS` environment variables need to be provided.
-Even if not accessing the console, these environment properties are required if creating a cluster in the domain mode. 
+In this case, to be able to access the console, `MGMT_USER` and `MGMT_PASS` environment variables
+(or `-mu` and `-mp` equivalents) need to be provided. Even if not accessing the console,
+these environment properties are required if creating a cluster in the domain mode.
+
+If no application and/or management user and password is specified, the image will generate a new one. A newly 
+generated user/password pair will be displayed on the console before the starts up.
 
 Here are some examples on how environment variables can be provided depending on the chosen method to start the image.
 
-Docker run example:
+Docker run example with environmental variables:
 
     docker run ... -e "APP_USER=user" -e "APP_PASS=changeme" jboss/infinispan-server 
+
+Docker run example with switches:
+
+    docker run ... jboss/infinispan-server -au "user" -ap "changeme"
 
 Dockerfile example:
 
@@ -32,9 +42,9 @@ Kubernetes yaml example:
         ...
         env:
         - name: APP_USER
-          value: \"user\"
+          value: "user"
         - name: APP_PASS
-          value: \"changeme\"
+          value: "changeme"
 
 OpenShift client example:
 
