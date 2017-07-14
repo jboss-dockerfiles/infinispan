@@ -258,6 +258,7 @@ esac
 done
 
 addAppUser
+addMgmtUser
 
 if [ "$CONTAINER_SETTINGS" == "true" ]
 then
@@ -283,7 +284,6 @@ fi
 
 if [ "$RUN_TYPE" = "DOMAIN_CONTROLLER" ]
 then
-  addMgmtUser
   LAUNCHER=$SERVER/bin/domain.sh
   exec $LAUNCHER --host-config host-master.xml $BIND_OPTS $SERVER_OPTIONS
 elif [ "$RUN_TYPE" == "HOST_CONTROLLER" ]
