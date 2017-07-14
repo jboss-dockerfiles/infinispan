@@ -27,7 +27,7 @@ LABEL name="Infinispan Server" \
       architecture="x86_64" \
       io.k8s.description="Provides a scalable in-memory distributed database designed for fast access to large volumes of data." \
       io.k8s.display-name="Infinispan Server" \
-      io.openshift.expose-services="8080:http,11222:hotrod" \
+      io.openshift.expose-services="8080:http,11222:hotrod,8778:jolokia" \
       io.openshift.tags="datagrid,java,jboss" \
       io.openshift.s2i.scripts-url="image:///usr/local/s2i/bin"
 
@@ -54,4 +54,4 @@ COPY .s2i /usr/local/s2i
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Expose Infinispan server  ports 
-EXPOSE 7600 8080 8181 8888 9990 11211 11222 57600
+EXPOSE 7600 8080 8181 8888 9990 11211 11222 57600 8778
