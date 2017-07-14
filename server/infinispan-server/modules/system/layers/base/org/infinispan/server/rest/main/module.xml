@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.3" name="org.infinispan.server.rest">
+   <properties>
+      <property name="jboss.api" value="private" />
+   </properties>
+
+   <resources>
+      <resource-root path="infinispan-server-rest.jar"/>
+   </resources>
+
+   <dependencies>
+      <module name="com.thoughtworks.xstream" />
+      <module name="javax.api" />
+      <module name="javax.transaction.api" />
+      <module name="javax.ws.rs.api" />
+      <module name="org.apache.xerces" services="import" />
+      <module name="org.codehaus.jackson.jackson-core-asl" />
+      <module name="org.codehaus.jackson.jackson-mapper-asl" />
+      <module name="org.codehaus.jackson.jackson-jaxrs" />
+      <module name="org.codehaus.jackson.jackson-xc" />
+      <module name="org.infinispan" />
+      <!-- Netty is exported by server core -->
+      <module name="org.infinispan.server" />
+      <module name="org.jboss.logging" />
+      <module name="org.jboss.marshalling" services="import"/>
+      <module name="org.jgroups" />
+   </dependencies>
+</module>

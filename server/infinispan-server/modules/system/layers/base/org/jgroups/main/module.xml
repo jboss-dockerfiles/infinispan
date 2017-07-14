@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.3" name="org.jgroups">
+
+    <resources>
+        <resource-root path="jgroups-4.0.4.Final.jar"/>
+    </resources>
+
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="org.jgroups.extension"/>
+        <module name="org.jgroups.kubernetes.kubernetes"/>
+        <module name="org.jboss.sasl" services="import" />
+    </dependencies>
+</module>

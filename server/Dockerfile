@@ -5,13 +5,10 @@ FROM jboss/base-jdk:8
 ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 9.1.0.CR1
+ENV INFINISPAN_VERSION 9.0.0-SNAPSHOT
 
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
-
-# Server download location
-ENV DISTRIBUTION_URL https://repository.jboss.org/nexus/content/repositories/releases/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip
 
 # Labels
 LABEL name="Infinispan Server" \
@@ -29,9 +26,9 @@ USER root
 
 ENV HOME /opt/jboss/
 
-RUN INFINISPAN_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUTION_URL && sha1sum /tmp/server.zip | grep $INFINISPAN_SHA \
-    && unzip -q /tmp/server.zip -d $HOME && mv $HOME/infinispan-server-* $HOME/infinispan-server && rm /tmp/server.zip \ 
-    && chown -R 1000.0 /opt/jboss/infinispan-server/ \
+COPY infinispan-server /opt/jboss/infinispan-server/
+
+RUN chown -R 1000.0 /opt/jboss/infinispan-server/ \
     && chmod -R g+rw /opt/jboss/infinispan-server/ \
     && find /opt/jboss/infinispan-server/ -type d -exec chmod g+x {} +
 
