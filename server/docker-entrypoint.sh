@@ -2,7 +2,8 @@
 
 # S2I build scripts do not override Docker Entrypoints (see https://github.com/openshift/source-to-image/issues/475#issuecomment-215891632),
 # thus we need to check whether or not we are running a build or a standard container.
-echo "Entry point arguments: $@"
+# This line is commented intentionally, it is very useful for debugging.
+# echo "Entry point arguments: $@"
 if [[ $@ == *"/usr/local/s2i/bin/assemble"* ]]
 then
     echo "---> Performing S2I build... Skipping server startup"
@@ -14,8 +15,11 @@ set -e
 
 is_not_empty() {
     local var=$1
-
     [[ -n $var ]]
+}
+
+generate_user_or_password() {
+    echo $(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n1)
 }
 
 addMgmtUser() {
@@ -25,9 +29,13 @@ addMgmtUser() {
   if is_not_empty $usr && is_not_empty $pass; then
     $SERVER/bin/add-user.sh -u $usr -p $pass
   else
+    usr=$(generate_user_or_password)
+    pass=$(generate_user_or_password)
     echo "######################################################################################"
     echo "# Using domain mode but no management user and/or password provided.                 #"
-    echo "# Infinispan servers won't be able to cluster without these credentials being set.   #"
+    echo "# Management user and password has been generated.                                   #"
+    echo "# Management user: $usr                                                        #"
+    echo "# Management password: $pass                                                   #"
     echo "#                                                                                    #"
     echo "# You can provide management user and password details via environment variables.    #"
     echo "#                                                                                    #"
@@ -46,13 +54,14 @@ addMgmtUser() {
     echo "#         ...                                                                        #"
     echo "#         env:                                                                       #"
     echo "#         - name: MGMT_USER                                                          #"
-    echo "#           value: \"admin\"                                                         #"
+    echo "#           value: admin                                                             #"
     echo "#         - name: MGMT_PASS                                                          #"
-    echo "#           value: \"admin\"                                                         #"
+    echo "#           value: admin                                                             #"
     echo "#                                                                                    #"
     echo "# OpenShift client example:                                                          #"
-    echo "#     oc new-app ... -e \"MGMT_USER=user\" -e \"MGMT_PASS=changeme\" ...             #"
+    echo "#     oc new-app ... -e MGMT_USER=user -e MGMT_PASS=changeme ...                     #"
     echo "######################################################################################"
+    $SERVER/bin/add-user.sh -u $usr -p $pass
   fi
 }
 
@@ -68,14 +77,18 @@ addAppUser()  {
       $SERVER/bin/add-user.sh -a -u $usr -p $pass
     fi
   else
+    usr=$(generate_user_or_password)
+    pass=$(generate_user_or_password)
     echo "######################################################################################"
     echo "# No application user and/or password provided.                                      #"
-    echo "# You will not be able to access Infinispan servers without providing credentials.   #"
+    echo "# Application user and password has been generated.                                  #"
+    echo "# Application user: $usr                                                       #"
+    echo "# Application password: $pass                                                   #"
     echo "#                                                                                    #"
     echo "# You can provide application user and password details via environment variables.   #"
     echo "#                                                                                    #"
     echo "# Docker run example:                                                                #"
-    echo "#     docker run ... -e \"APP_USER=user\" -e \"APP_PASS=changeme\" ...               #"
+    echo "#     docker run ... -e APP_USER=user -e APP_PASS=changeme                           #"
     echo "#                                                                                    #"
     echo "# Dockerfile example:                                                                #"
     echo "#     ENV APP_USER user                                                              #"
@@ -89,13 +102,14 @@ addAppUser()  {
     echo "#         ...                                                                        #"
     echo "#         env:                                                                       #"
     echo "#         - name: APP_USER                                                           #"
-    echo "#           value: \"user\"                                                          #"
+    echo "#           value: user                                                              #"
     echo "#         - name: APP_PASS                                                           #"
-    echo "#           value: \"changeme\"                                                      #"
+    echo "#           value: changeme                                                          #"
     echo "#                                                                                    #"
     echo "# OpenShift client example:                                                          #"
-    echo "#     oc new-app ... -e \"APP_USER=user\" -e \"APP_PASS=changeme\" ...               #"
+    echo "#     oc new-app ... -e APP_USER=user -e APP_PASS=changeme ...                       #"
     echo "######################################################################################"
+    $SERVER/bin/add-user.sh -a -u $usr -p $pass
   fi
 }
 
@@ -151,11 +165,9 @@ SERVER_CONFIGURATION="clustered.xml"
 JAVA_OPTS="-Xms64m -Djava.net.preferIPv4Stack=true"
 PERCENT_OF_MEMORY_FOR_MX=70
 
-addAppUser
-
 for i in "$@"
 do
-case $i in
+case $1 in
     domain-controller)
     RUN_TYPE='DOMAIN_CONTROLLER'
     shift
@@ -177,6 +189,10 @@ case $i in
     echo "# docker-entrypoint.sh host-controller [-n|--no-container-settings] [other options]  #"
     echo "#     Starts a default standalone Server                                             #"
     echo "#     -n|--no-container-settings omits memory and CPU settings for container mode    #"
+    echo "# docker-entrypoint.sh -ap pass -au user [-ar roles] [other options]                 #"
+    echo "#     Creates application user with specified password and roles                     #"
+    echo "# docker-entrypoint.sh -mp pass -mu user [other options]                             #"
+    echo "#     Creates management user with specified password                                #"
     echo "#                                                                                    #"
     echo "# Examples:                                                                          #"
     echo "#     docker-entrypoint.sh -c clustered.xml -Djboss.default.jgroups.stack=kubernetes #"
@@ -190,27 +206,59 @@ case $i in
     CONTAINER_SETTINGS="false"
     shift
     ;;
+    -au|--application-user)
+    shift
+    APP_USER="$1"
+    shift
+    ;;
+    -ap|--application-password)
+    shift
+    APP_PASS="$1"
+    shift
+    ;;
+    -ar|--application-roles)
+    shift
+    APP_ROLES="$1"
+    shift
+    ;;
+    -mu|--management-user)
+    shift
+    MGMT_USER="$1"
+    shift
+    ;;
+    -mp|--management-password)
+    shift
+    MGMT_PASS="$1"
+    shift
+    ;;
     -c)
-      # -c configuration.xml, so we need to shift the -c
-      shift
-      SERVER_OPTIONS="-c $1"
+    # -c configuration.xml, so we need to shift the -c
+    shift
+    SERVER_OPTIONS="-c $1"
     shift
     ;;
     *)
-    if [ -f "$SERVER/standalone/configuration/$i.xml" ]
+    if [ -z "$1" ]
     then
-      SERVER_CONFIGURATION="$i.xml"
-    elif [ -f "$SERVER/standalone/configuration/$i" ]
-    then
-      SERVER_CONFIGURATION="$i"
+      break
     else
-      SERVER_OPTIONS="$SERVER_OPTIONS $i"
+      if [ -f "$SERVER/standalone/configuration/$1.xml" ]
+      then
+        SERVER_CONFIGURATION="$1.xml"
+      elif [ -f "$SERVER/standalone/configuration/$1" ]
+      then
+        SERVER_CONFIGURATION="$1"
+      else
+        SERVER_OPTIONS="$SERVER_OPTIONS $1"
+      fi
     fi
     shift
     ;;
 esac
 done
 
+addAppUser
+addMgmtUser
 
 if [ "$CONTAINER_SETTINGS" == "true" ]
 then
@@ -236,7 +284,6 @@ fi
 
 if [ "$RUN_TYPE" = "DOMAIN_CONTROLLER" ]
 then
-  addMgmtUser
   LAUNCHER=$SERVER/bin/domain.sh
   exec $LAUNCHER --host-config host-master.xml $BIND_OPTS $SERVER_OPTIONS
 elif [ "$RUN_TYPE" == "HOST_CONTROLLER" ]
