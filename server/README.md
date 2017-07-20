@@ -1,5 +1,59 @@
 # Infinispan server Docker image
 
+## Configuring authentication
+
+To be able to connect to any of the Infinispan server Docker images, authentication is necessary.
+The easiest way to create a new user (with specified password) before starting the server is to specify `APP_USER`
+and `APP_PASS` environment variables or pass `-au` (for user name) and `-au` (for password) switches.
+
+Optionally, `APP_ROLES` environment variable (or `-ar` switch) can be passed in which provides specific security roles 
+to be associated with the user. The value of this environment variable is expected to be a comma-separated
+list of roles for the user.
+
+The management console exposed by the Infinispan server Docker images also requires authentication.
+In this case, to be able to access the console, `MGMT_USER` and `MGMT_PASS` environment variables
+(or `-mu` and `-mp` equivalents) need to be provided. Even if not accessing the console,
+these environment properties are required if creating a cluster in the domain mode.
+
+If no application and/or management user and password is specified, the image will generate a new one. A newly 
+generated user/password pair will be displayed on the console before the starts up.
+
+Here are some examples on how environment variables can be provided depending on the chosen method to start the image.
+
+Docker run example with environmental variables:
+
+    docker run ... -e "APP_USER=user" -e "APP_PASS=changeme" jboss/infinispan-server 
+
+Docker run example with switches:
+
+    docker run ... jboss/infinispan-server -au "user" -ap "changeme"
+
+Dockerfile example:
+
+    ENV APP_USER user
+    ENV APP_PASS changeme
+
+Kubernetes yaml example:
+
+    spec:
+      containers:
+      - args:
+        image: jboss/infinispan-server:...
+        ...
+        env:
+        - name: APP_USER
+          value: "user"
+        - name: APP_PASS
+          value: "changeme"
+
+OpenShift client example:
+
+    oc new-app ... -e "APP_USER=user" -e "APP_PASS=changeme" ...
+
+Finally, it's possible to add more fine grained credentials by invoking `add-user` command once the image has started up:
+
+    docker exec -it $(docker ps -l -q) /opt/jboss/infinispan-server/bin/add-user.sh
+
 ## Starting in clustered mode
 
 Run one or more:
@@ -42,14 +96,6 @@ The first param to the container is the name of the desired configuration. For e
 
     docker run -it jboss/infinispan-server cloud -Djboss.default.jgroups.stack=google -Djgroups.google.bucket=... -Djgroups.google.access_key=... 
 
-## Configuring authentication
-   
-The 'default' and 'standalone' running modes don't not have credentials set. In order to define them, run after launching the container:
-
-    docker exec -it $(docker ps -l -q) /opt/jboss/infinispan-server/bin/add-user.sh
-
-and follow the instructions.
-
 ## Running domain mode
 
 Domain mode is composed of a lightweight managing process that does not hold data called domain controller plus one or more
@@ -63,7 +109,8 @@ And then each host controller can be started as:
 
 ### Acessing the Server Management Console
 
-The Server Management Console listens on the domain controller on port 9990. Credentials are admin/admin.
+The Server Management Console listens on the domain controller on port 9990.
+To be able to access the console, credentials need to be provided (see above).
 
 ## Source to image (S2I)
 

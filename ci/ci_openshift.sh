@@ -48,7 +48,10 @@ function add_building_permission {
 
 function create_application {
   echo "==== Creating Infinispan application ===="
-  ./oc new-app $OPENSHIFT_COMPONENT_NAME --docker-image="$IMAGE_INSIDE_OPENSHIFT"
+  ./oc new-app $OPENSHIFT_COMPONENT_NAME \
+      --docker-image="$IMAGE_INSIDE_OPENSHIFT" \
+      -e "APP_USER=user" \
+      -e "APP_PASS=changeme"
   wait_for_ispn
 }
 
@@ -68,6 +71,19 @@ function perform_test_via_rest {
     TEST_RESULT=0
   else
     echo "REST test Failed"
+    TEST_RESULT=1
+  fi
+}
+
+function perform_negative_test_via_rest {
+  echo "==== Performing negative REST test ===="
+  ISPN_IP=`./oc describe svc/$OPENSHIFT_COMPONENT_NAME | grep IP: | awk '{print $2}'`
+  CODE_RETURNED=$(curl -s -o /dev/null -H 'Accept: text/plain' -w "%{http_code}" http://$ISPN_IP:8080/rest/default/1)
+  if [ $CODE_RETURNED == '401' ]; then
+    echo "REST test Passed"
+    TEST_RESULT=0
+  else
+    echo "REST test Failed. REST server returned $CODE_RETURNED but was expected 401"
     TEST_RESULT=1
   fi
 }
@@ -114,5 +130,6 @@ build_images
 create_application
 expose_route
 perform_test_via_rest
+perform_negative_test_via_rest
 
 exit $TEST_RESULT
