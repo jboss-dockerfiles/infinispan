@@ -113,6 +113,26 @@ addAppUser()  {
   fi
 }
 
+checkIfUserExistsForDomainMode()  {
+  local usr=$MGMT_USER
+  local pass=$MGMT_PASS
+
+   if [ "$RUN_TYPE" != "STANDALONE" ]
+   then
+      if [ "x$usr" = "x" ]
+      then
+         echo "Specifying management user is required for domain mode"
+         exit 1
+      fi
+
+      if [ "x$pass" = "x" ]
+      then
+         echo "Specifying management password is required for domain mode"
+         exit 1
+      fi
+   fi
+}
+
 # Based on https://github.com/fabric8io-images/run-java-sh/blob/master/fish-pepper/run-java-sh/fp-files/container-limits
 ceiling() {
   awk -vnumber="$1" -vdiv="$2" '
@@ -257,6 +277,7 @@ case $1 in
 esac
 done
 
+checkIfUserExistsForDomainMode
 addAppUser
 addMgmtUser
 

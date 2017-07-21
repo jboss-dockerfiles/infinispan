@@ -4,7 +4,7 @@
 
 To be able to connect to any of the Infinispan server Docker images, authentication is necessary.
 The easiest way to create a new user (with specified password) before starting the server is to specify `APP_USER`
-and `APP_PASS` environment variables or pass `-au` (for user name) and `-au` (for password) switches.
+and `APP_PASS` environment variables or pass `-au` (for user name) and `-ap` (for password) switches.
 
 Optionally, `APP_ROLES` environment variable (or `-ar` switch) can be passed in which provides specific security roles 
 to be associated with the user. The value of this environment variable is expected to be a comma-separated
@@ -101,11 +101,13 @@ The first param to the container is the name of the desired configuration. For e
 Domain mode is composed of a lightweight managing process that does not hold data called domain controller plus one or more
 host controllers co-located with the Infinispan Server nodes. To run the domain controller:
 
-    docker run --name=dc -it jboss/infinispan-server domain-controller 
+    docker run --name=dc -it jboss/infinispan-server domain-controller -mu user -mp password
 
 And then each host controller can be started as:
 
-    docker run --link dc:dc -it jboss/infinispan-server host-controller
+    docker run --link dc:dc -it jboss/infinispan-server host-controller -mu user -mp password
+
+Specifying management user and password is required for operating the domain mode.
 
 ### Acessing the Server Management Console
 
