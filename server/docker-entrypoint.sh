@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 # S2I build scripts do not override Docker Entrypoints (see https://github.com/openshift/source-to-image/issues/475#issuecomment-215891632),
 # thus we need to check whether or not we are running a build or a standard container.
 # This line is commented intentionally, it is very useful for debugging.
@@ -27,109 +29,122 @@ addMgmtUser() {
   local pass=$MGMT_PASS
 
   if is_not_empty $usr && is_not_empty $pass; then
-    $SERVER/bin/add-user.sh -u $usr -p $pass
+    $SERVER/bin/add-user.sh -u $usr -p $pass > /dev/null 2>&1 
   else
     usr=$(generate_user_or_password)
     pass=$(generate_user_or_password)
-    echo "######################################################################################"
-    echo "# Using domain mode but no management user and/or password provided.                 #"
-    echo "# Management user and password has been generated.                                   #"
-    echo "# Management user: $usr                                                        #"
-    echo "# Management password: $pass                                                   #"
-    echo "#                                                                                    #"
-    echo "# You can provide management user and password details via environment variables.    #"
-    echo "#                                                                                    #"
-    echo "# Docker run example:                                                                #"
-    echo "#     docker run ... -e \"MGMT_USER=user\" -e \"MGMT_PASS=changeme\" ...             #"
-    echo "#                                                                                    #"
-    echo "# Dockerfile example:                                                                #"
-    echo "#     ENV MGMT_USER admin                                                            #"
-    echo "#     ENV MGMT_PASS admin                                                            #"
-    echo "#                                                                                    #"
-    echo "# Kubernetes Example:                                                                #"
-    echo "#     spec:                                                                          #"
-    echo "#       containers:                                                                  #"
-    echo "#       - args:                                                                      #"
-    echo "#         image: jboss/infinispan-server:...                                         #"
-    echo "#         ...                                                                        #"
-    echo "#         env:                                                                       #"
-    echo "#         - name: MGMT_USER                                                          #"
-    echo "#           value: admin                                                             #"
-    echo "#         - name: MGMT_PASS                                                          #"
-    echo "#           value: admin                                                             #"
-    echo "#                                                                                    #"
-    echo "# OpenShift client example:                                                          #"
-    echo "#     oc new-app ... -e MGMT_USER=user -e MGMT_PASS=changeme ...                     #"
-    echo "######################################################################################"
-    $SERVER/bin/add-user.sh -u $usr -p $pass
+    printBorder
+    printLine " No management user and/or password provided."
+    printLine " Management user and password has been generated."
+    printLine " Management user: $usr"
+    printLine " Management password: $pass"
+    printLine
+    printLine " You can provide management user and password details via environment"
+    printLine " variables."
+    printLine
+    printLine " Docker run example:"
+    printLine "   docker run ... -e \"MGMT_USER=user\" -e \"MGMT_PASS=changeme\" ..."
+    printLine
+    printLine " Dockerfile example:"
+    printLine "   ENV MGMT_USER admin"
+    printLine "   ENV MGMT_PASS admin"
+    printLine 
+    printLine " Kubernetes Example:"
+    printLine "   spec:"
+    printLine "     containers:"
+    printLine "     - args:"
+    printLine "       image: jboss/infinispan-server:..."
+    printLine "       ..."
+    printLine "       env:"
+    printLine "       - name: MGMT_USER"
+    printLine "           value: admin"
+    printLine "         - name: MGMT_PASS"
+    printLine "           value: admin"
+    printLine 
+    printLine " OpenShift client example:"
+    printLine "     oc new-app ... -e MGMT_USER=user -e MGMT_PASS=changeme ..."
+    printBorder
+    $SERVER/bin/add-user.sh -u $usr -p $pass > /dev/null 2>&1
   fi
+}
+
+printLine() {
+  format='# %-76s #\n'
+  printf "$format" "$1"
+}
+
+printBorder() {
+  printf '#%.0s' {1..80}
+  printf "\n"
 }
 
 addAppUser()  {
   local usr=$APP_USER
   local pass=$APP_PASS
   local roles=$APP_ROLES
-
+ format='# %-80s #\n'
   if is_not_empty $usr && is_not_empty $pass; then
     if is_not_empty $roles; then
-      $SERVER/bin/add-user.sh -a -u $usr -p $pass -g $roles
+      $SERVER/bin/add-user.sh -a -u $usr -p $pass -g $roles > /dev/null 2>&1
     else
-      $SERVER/bin/add-user.sh -a -u $usr -p $pass
+      $SERVER/bin/add-user.sh -a -u $usr -p $pass > /dev/null 2>&1
     fi
   else
     usr=$(generate_user_or_password)
     pass=$(generate_user_or_password)
-    echo "######################################################################################"
-    echo "# No application user and/or password provided.                                      #"
-    echo "# Application user and password has been generated.                                  #"
-    echo "# Application user: $usr                                                       #"
-    echo "# Application password: $pass                                                   #"
-    echo "#                                                                                    #"
-    echo "# You can provide application user and password details via environment variables.   #"
-    echo "#                                                                                    #"
-    echo "# Docker run example:                                                                #"
-    echo "#     docker run ... -e APP_USER=user -e APP_PASS=changeme                           #"
-    echo "#                                                                                    #"
-    echo "# Dockerfile example:                                                                #"
-    echo "#     ENV APP_USER user                                                              #"
-    echo "#     ENV APP_PASS changeme                                                          #"
-    echo "#                                                                                    #"
-    echo "# Kubernetes example:                                                                #"
-    echo "#     spec:                                                                          #"
-    echo "#       containers:                                                                  #"
-    echo "#       - args:                                                                      #"
-    echo "#         image: jboss/infinispan-server:...                                         #"
-    echo "#         ...                                                                        #"
-    echo "#         env:                                                                       #"
-    echo "#         - name: APP_USER                                                           #"
-    echo "#           value: user                                                              #"
-    echo "#         - name: APP_PASS                                                           #"
-    echo "#           value: changeme                                                          #"
-    echo "#                                                                                    #"
-    echo "# OpenShift client example:                                                          #"
-    echo "#     oc new-app ... -e APP_USER=user -e APP_PASS=changeme ...                       #"
-    echo "######################################################################################"
-    $SERVER/bin/add-user.sh -a -u $usr -p $pass
+    printBorder
+    printLine "No application user and/or password provided."
+    printLine "Application user and password has been generated."
+    printLine "Application user: $usr"
+    printLine "Application password: $pass"
+    printLine
+    printLine "You can provide application user and password details via environment"
+    printLine "variables."
+    printLine
+    printLine "Docker run example:"
+    printLine "docker run ... -e \"APP_USER=user\" -e \"APP_PASS=changeme\"  ..."
+    printLine
+    printLine "Dockerfile example:"
+    printLine " ENV APP_USER user"
+    printLine " ENV APP_PASS changeme"
+    printLine
+    printLine "Kubernetes example:"
+    printLine "     spec:"
+    printLine "       containers:"
+    printLine "       - args:"
+    printLine "         image: jboss/infinispan-server:..."
+    printLine "         ..."
+    printLine "         env:"
+    printLine "         - name: APP_USER"
+    printLine "           value: user"
+    printLine "         - name: APP_PASS"
+    printLine "           value: changeme"
+    printLine
+    printLine " OpenShift client example:"
+    printLine "     oc new-app ... -e APP_USER=user -e APP_PASS=changeme ..."
+    printBorder
+    $SERVER/bin/add-user.sh -a -u $usr -p $pass > /dev/null 2>&1
   fi
+}
+
+mgmtUserPassRequired()  {
+
+ printBorder
+ printLine "Specifying management user is required for domain mode"
+ printLine  
+ printLine "  docker run ... -e \"MGMT_USER=user\" -e \"MGMT_PASS=changeme\" ..."
+ printBorder
+ exit 1
+
 }
 
 checkIfUserExistsForDomainMode()  {
   local usr=$MGMT_USER
   local pass=$MGMT_PASS
 
-   if [ "$RUN_TYPE" != "STANDALONE" ]
+  if [ "$RUN_TYPE" != "STANDALONE" ] && ([ "x$usr" = "x" ] || [ "x$pass" = "x" ]); 
    then
-      if [ "x$usr" = "x" ]
-      then
-         echo "Specifying management user is required for domain mode"
-         exit 1
-      fi
-
-      if [ "x$pass" = "x" ]
-      then
-         echo "Specifying management password is required for domain mode"
-         exit 1
-      fi
+       mgmtUserPassRequired
    fi
 }
 
@@ -197,29 +212,35 @@ case $1 in
     shift
     ;;
     -h|--help)
-    echo "######################################################################################"
-    echo "# This script is responsible for setting basic                                       #"
-    echo "# configuration for running Infinispan Server in Docker                              #"
-    echo "#                                                                                    #"
-    echo "# Parameters:                                                                        #"
-    echo "# docker-entrypoint.sh domain-controller [other options]                             #"
-    echo "#     Creates managment user and starts a master controller process                  #"
-    echo "# docker-entrypoint.sh host-controller [other options]                               #"
-    echo "#     Starts a slave instance and connects to a domain controller                    #"
-    echo "# docker-entrypoint.sh host-controller [-n|--no-container-settings] [other options]  #"
-    echo "#     Starts a default standalone Server                                             #"
-    echo "#     -n|--no-container-settings omits memory and CPU settings for container mode    #"
-    echo "# docker-entrypoint.sh -ap pass -au user [-ar roles] [other options]                 #"
-    echo "#     Creates application user with specified password and roles                     #"
-    echo "# docker-entrypoint.sh -mp pass -mu user [other options]                             #"
-    echo "#     Creates management user with specified password                                #"
-    echo "#                                                                                    #"
-    echo "# Examples:                                                                          #"
-    echo "#     docker-entrypoint.sh -c clustered.xml -Djboss.default.jgroups.stack=kubernetes #"
-    echo "#     docker-entrypoint.sh clustered.xml -Djboss.default.jgroups.stack=kubernetes    #"
-    echo "#     docker-entrypoint.sh clustered -Djboss.default.jgroups.stack=kubernetes        #"
-    echo "#     docker-entrypoint.sh -n clustered -Djboss.default.jgroups.stack=kubernetes     #"
-    echo "######################################################################################"
+    printBorder
+    printLine " This script is responsible for setting basic configuration for running "
+    printLine " Infinispan Server in Docker"
+    printLine " Usage: docker-entrypoint.sh [profile] [options]"
+    printLine 
+    printLine " Where [profile] is:"
+    printLine "  domain-controller"
+    printLine "    Creates managment user and starts a master controller process"
+    printLine "  host-controller"
+    printLine "    Starts a slave instance and connects to a domain controller"
+    printLine "  standalone"
+    printLine "    Starts a non-clustered server, based on standalone.xml configuration"
+    printLine "  [clustered.xml|cloud.xml|file.xml|cloud|file|-c standalone.xml]"
+    printLine "    Starts the server with another xml configuration"
+    printLine
+    printLine " Available [options]:"
+    printLine "  [-n|--no-container-settings]"
+    printLine "    Omits memory and CPU settings for the container"
+    printLine " -ap pass -au user [-ar roles]"
+    printLine "    Creates application user with specified password and roles"
+    printLine " -mp pass -mu user [other options]"
+    printLine "    Creates management user with specified password"
+    printLine
+    printLine "Examples:"
+    printLine "docker-entrypoint.sh -c clustered.xml -Djboss.default.jgroups.stack=kubernetes"
+    printLine "docker-entrypoint.sh clustered.xml -Djboss.default.jgroups.stack=kubernetes"
+    printLine "docker-entrypoint.sh clustered -Djboss.default.jgroups.stack=kubernetes"
+    printLine "docker-entrypoint.sh -n clustered -Djboss.default.jgroups.stack=kubernetes"
+    printBorder
     exit 1
     ;;
     -n|--no-container-settings)
