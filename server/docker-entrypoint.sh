@@ -82,7 +82,6 @@ addAppUser()  {
   local usr=$APP_USER
   local pass=$APP_PASS
   local roles=$APP_ROLES
- format='# %-80s #\n'
   if is_not_empty $usr && is_not_empty $pass; then
     if is_not_empty $roles; then
       $SERVER/bin/add-user.sh -a -u $usr -p $pass -g $roles > /dev/null 2>&1
