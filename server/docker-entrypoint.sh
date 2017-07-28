@@ -330,7 +330,7 @@ then
 elif [ "$RUN_TYPE" == "HOST_CONTROLLER" ]
 then
   LAUNCHER=$SERVER/bin/domain.sh
-  BASE=$(echo -n $MGMT_USER | base64) && sed -i "s/\<secret value=.*/secret value=\"$BASE\" \/>/" $SERVER/domain/configuration/host-slave.xml
+  BASE=$(echo -n $MGMT_PASS | base64) && sed -i "s/\<secret value=.*/secret value=\"$BASE\" \/>/" $SERVER/domain/configuration/host-slave.xml
   SLAVE_FILE=$SERVER/domain/configuration/host-slave.xml
   sed -e "/<remote/ {/username/! s/remote/remote username=\"$MGMT_USER\"/}" -i $SLAVE_FILE
   sed -e "/<remote.*username/ s/\(username\)=\"[^\"]*\"/username=\"$MGMT_USER\"/" -i $SLAVE_FILE
