@@ -1,6 +1,8 @@
 #!/bin/bash
 
 SERVER_CONTAINER_ID=""
+TEST_MGMT_USER=user1
+TEST_MGMT_PASS=pass1
 
 function pre_build_cleanup {
   echo "==== Pre build clean up (just in case some rubbish was left by the previous build) ===="
@@ -24,7 +26,7 @@ function start_server {
 
 function start_domain_controller {
   echo "==== Starting domain controller ===="
-  SERVER_CONTAINER_ID=`sudo docker run -d --name dc -e "MGMT_USER=admin" -e "MGMT_PASS=admin" infinispan-server domain-controller`
+  SERVER_CONTAINER_ID=`sudo docker run -d --name dc -e "MGMT_USER=$TEST_MGMT_USER" -e "MGMT_PASS=$TEST_MGMT_PASS" infinispan-server domain-controller`
   if [ -z "$SERVER_CONTAINER_ID" ]; then
     echo "Could not create the container"
     exit 1
@@ -33,7 +35,7 @@ function start_domain_controller {
 
 function start_host_controller {
   echo "==== Starting host controller ===="
-  SERVER_CONTAINER_ID=`sudo docker run -d --name hc -e "MGMT_USER=admin" -e "MGMT_PASS=admin" --link dc:dc -it infinispan-server host-controller`
+  SERVER_CONTAINER_ID=`sudo docker run -d --name hc -e "MGMT_USER=$TEST_MGMT_USER" -e "MGMT_PASS=$TEST_MGMT_PASS" --link dc:dc -it infinispan-server host-controller`
   if [ -z "$SERVER_CONTAINER_ID" ]; then
     echo "Could not create the container"
     exit 1
@@ -44,8 +46,8 @@ function check_domain {
   echo "==== Checking domain cluster ===="
   MEMBERS=$(docker exec -t dc /opt/jboss/infinispan-server/bin/ispn-cli.sh -c ":read-children-names(child-type=host)")
   HOST_CONTROLLER=$(docker exec hc hostname)
-  [[ $MEMBERS =~ "master" ]] || (echo "master not found in domain"; exit 1)
-  [[ $MEMBERS =~ $HOST_CONTROLLER ]] || (echo "Host controller not found in domain"; exit 1) 
+  [[ ${MEMBERS} =~ "master" ]] || (echo "master not found in domain"; exit 1)
+  [[ ${MEMBERS} =~ $HOST_CONTROLLER ]] || (echo "Host controller not found in domain"; exit 1)
   echo "==== Domain OK ===="
 }
 
@@ -55,12 +57,14 @@ function wait_for_server_start {
   do
     sleep 1s
     echo "Checking logs..."
-    sudo docker logs $SERVER_CONTAINER_ID | grep -i "started in"
+    sudo docker logs ${SERVER_CONTAINER_ID} | grep -i "started in"
     if [ $? -eq 0 ]; then
       echo "Server started successfully"
       return
     fi
   done
+  echo "Server failed to start"
+  exit 1
 }
 
 function stop_server {
