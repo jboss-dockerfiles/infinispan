@@ -58,9 +58,8 @@ RUN_TYPE='STANDALONE'
 CONTAINER_SETTINGS="true"
 SERVER_OPTIONS=""
 SERVER_CONFIGURATION="clustered.xml"
-# Xms should always be set: https://developers.redhat.com/blog/2014/07/15/dude-wheres-my-paas-memory-tuning-javas-footprint-in-openshift-part-1/
-JAVA_OPTS="-Xms64m -Djava.net.preferIPv4Stack=true"
-PERCENT_OF_MEMORY_FOR_MX=70
+JAVA_OPTS="-Djava.net.preferIPv4Stack=true -XX:+DisableExplicitGC"
+PERCENT_OF_MEMORY_FOR_MX=50
 
 addAppUser
 
@@ -131,9 +130,10 @@ then
         echo "Xmx explicitly set, skipping auto-correction"
       else
         # https://github.com/fabric8io-images/run-java-sh/blob/master/fish-pepper/run-java-sh/fp-files/java-default-options#L44
-        # Use up to 70% for Xmx. In case of any problems, lower this to 50%.
         MX=$(echo "${MEMORY_LIMIT} $PERCENT_OF_MEMORY_FOR_MX 1048576" | awk '{printf "%d\n" , ($1*$2)/(100*$3) + 0.5}')
-        JAVA_OPTS="$JAVA_OPTS -Xmx${MX}m"
+        # Readiness/liveness probes
+        MX=$((${MX}-32))
+        JAVA_OPTS="$JAVA_OPTS -Xmx${MX}m -Xms${MX}m"
         export JAVA_OPTS
       fi
   fi
