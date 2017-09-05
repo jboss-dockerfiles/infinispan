@@ -80,6 +80,17 @@ To run with the ```tcp``` stack instead of ```udp```:
 The run with the ```tcp-gossip``` stack, specifying the router location:
 
     docker run -it jboss/infinispan-server -Djboss.default.jgroups.stack=tcp-gossip -Djgroups.gossip.initial_hosts=172.17.0.2[12001]
+    
+    
+### Integrate with jboss/jgroups-gossip
+
+If the gossip router comes from ```jboss/jgroups-gossip```, it's important to align the versions with the Infinispan Server.
+
+So for Infinispan 9.1.0.Final, the correct way of starting the gossip container is:
+
+```
+docker run -p 12001:12001 -e "LogLevel=DEBUG" jboss/jgroups-gossip:4.0.4.Final
+```
 
 ## Starting in standalone mode
 
