@@ -82,7 +82,7 @@ The run with the ```tcp-gossip``` stack, specifying the router location:
     docker run -it jboss/infinispan-server -Djboss.default.jgroups.stack=tcp-gossip -Djgroups.gossip.initial_hosts=172.17.0.2[12001]
     
     
-### Integrate with jboss/jgroups-gossip
+#### Integrate with jboss/jgroups-gossip
 
 If the gossip router comes from ```jboss/jgroups-gossip```, it's important to align the versions with the Infinispan Server.
 
