@@ -14,7 +14,7 @@ Infinispan can be used in two different ways: in client-server mode and in embed
 
 ## Branching strategy
 
-[Master branch](https://github.com/jboss-dockerfiles/infinispan/tree/master) contains current development version (currently 9.0.x).
+[Master branch](https://github.com/jboss-dockerfiles/infinispan/tree/master) contains current development version (currently 9.2.x).
 
 Each minor stable version has its own branch (e.g. [8.2.x](https://github.com/jboss-dockerfiles/infinispan/tree/8.2.x)). All micro versions are tagged from that branch (e.g. 8.2.1.Final, 8.2.2.final).
 
