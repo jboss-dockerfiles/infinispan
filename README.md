@@ -5,7 +5,7 @@ Infinispan Docker Images
 
 [Infinispan](http://infinispan.org/) is an open source data grid platform. 
 
-This repository contains Docker imgaes for different flavours of Infinispan:
+This repository contains Docker images for different flavours of Infinispan:
 
 * Infinispan server
 * Embedded Infinispan
