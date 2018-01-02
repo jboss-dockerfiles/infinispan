@@ -114,7 +114,7 @@ function build_images {
   IMAGE="${REGISTRY_IP}:5000/myproject/$OPENSHIFT_COMPONENT_NAME"
   login_as_developer
   sudo docker build --no-cache --force-rm -t $IMAGE ../server
-  sudo docker login -u $(./oc whoami) -e nobody@redhat.com -p $(./oc whoami -t) ${REGISTRY_IP}:5000
+  sudo docker login -u $(./oc whoami) -p $(./oc whoami -t) ${REGISTRY_IP}:5000
   sudo docker push ${IMAGE}
   IMAGE_INSIDE_OPENSHIFT=$IMAGE
 }
