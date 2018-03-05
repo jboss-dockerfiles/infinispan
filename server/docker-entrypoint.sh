@@ -273,7 +273,7 @@ case $1 in
     -c)
     # -c configuration.xml, so we need to shift the -c
     shift
-    SERVER_OPTIONS="-c $1"
+    SERVER_CONFIGURATION="$1"
     shift
     ;;
     *)
