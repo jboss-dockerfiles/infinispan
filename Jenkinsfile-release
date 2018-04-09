@@ -1,0 +1,30 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent {
+        label 'slave-group-release'
+    }
+
+    parameters {
+        string(defaultValue: '0.0.0.Qualifier', description: 'Release version', name: 'version')
+        string(defaultValue: 'true', description: 'Dry run', name: 'dryrun')
+    }
+
+    options {
+        timeout(time: 3, unit: 'HOURS')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Version') {
+            steps {
+                sh "make RELEASE_NAME=${version} DRY_RUN=${dryrun} PUSH_ORIGIN=origin release"
+            }
+        }
+    }
+}
