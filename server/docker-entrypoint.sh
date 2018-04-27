@@ -195,7 +195,7 @@ RUN_TYPE='STANDALONE'
 CONTAINER_SETTINGS="true"
 SERVER_OPTIONS=""
 SERVER_CONFIGURATION="clustered.xml"
-JAVA_OPTS="-Djava.net.preferIPv4Stack=true -XX:+DisableExplicitGC"
+JAVA_OPTS="-Djava.net.preferIPv4Stack=true -XX:+DisableExplicitGC -Djboss.modules.system.pkgs=org.jboss.byteman,org.jboss.logmanager.LogManager"
 PERCENT_OF_MEMORY_FOR_MX=50
 
 for i in "$@"
