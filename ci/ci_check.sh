@@ -18,36 +18,32 @@ function build_images {
 function start_server {
   echo "==== Starting the server ===="
   SERVER_CONTAINER_ID=`sudo docker run -d --name infinispan-server-ci -e "APP_USER=user" -e "APP_PASS=changeme" infinispan-server -Djboss.default.jgroups.stack=tcp`
-  if [ -z "$SERVER_CONTAINER_ID" ]; then
-    echo "Could not create the container"
-    exit 1
-  fi
+  [[ -z "$SERVER_CONTAINER_ID" ]] && die "Could not create the container"
 }
 
 function start_domain_controller {
   echo "==== Starting domain controller ===="
   SERVER_CONTAINER_ID=`sudo docker run -d --name dc -e "MGMT_USER=$TEST_MGMT_USER" -e "MGMT_PASS=$TEST_MGMT_PASS" infinispan-server domain-controller`
-  if [ -z "$SERVER_CONTAINER_ID" ]; then
-    echo "Could not create the container"
-    exit 1
-  fi
+  [[ -z "$SERVER_CONTAINER_ID" ]] && die "Could not create the container"
 }
 
 function start_host_controller {
   echo "==== Starting host controller ===="
   SERVER_CONTAINER_ID=`sudo docker run -d --name hc -e "MGMT_USER=$TEST_MGMT_USER" -e "MGMT_PASS=$TEST_MGMT_PASS" --link dc:dc -it infinispan-server host-controller`
-  if [ -z "$SERVER_CONTAINER_ID" ]; then
-    echo "Could not create the container"
+  [[ -z "$SERVER_CONTAINER_ID" ]] && die "Could not create the container"
+}
+
+function die () {
+    echo $1
     exit 1
-  fi
 }
 
 function check_domain {
   echo "==== Checking domain cluster ===="
   MEMBERS=$(docker exec -t dc /opt/jboss/infinispan-server/bin/ispn-cli.sh -c ":read-children-names(child-type=host)")
   HOST_CONTROLLER=$(docker exec hc hostname)
-  [[ ${MEMBERS} =~ "master" ]] || (echo "master not found in domain"; exit 1)
-  [[ ${MEMBERS} =~ $HOST_CONTROLLER ]] || (echo "Host controller not found in domain"; exit 1)
+  [[ ${MEMBERS} =~ "master" ]] || die  "master not found in domain"
+  [[ ${MEMBERS} =~ $HOST_CONTROLLER ]] || die "Host controller not found in domain"
   echo "==== Domain OK ===="
 }
 
