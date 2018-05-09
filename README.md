@@ -27,3 +27,11 @@ The source is [available on GitHub](https://github.com/jboss-dockerfiles/infinis
 ## Issues
 
 Please report any issues or file RFEs on [GitHub](https://github.com/jboss-dockerfiles/infinispan/issues).
+
+## Running tests
+
+Tests can be run locally going to the ```ci``` folder.
+* Docker tests: ```./ci_check.sh```
+* Openshift tests: ```./ci_openshift.sh```
+
+In order to run the Openshift tests, make sure to have a recent version of docker (> 1.15) configured with ```--insecure-registry 172.30.0.0/16```
