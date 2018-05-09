@@ -6,13 +6,12 @@ TEST_MGMT_PASS=pass1
 
 function pre_build_cleanup {
   echo "==== Pre build clean up (just in case some rubbish was left by the previous build) ===="
-  sudo docker rmi -f infinispan-server infinispan-modules
+  sudo docker rmi -f infinispan-server
 }
 
 function build_images {
   echo "==== Building images ===="
   sudo docker build --no-cache --force-rm -t infinispan-server ../server
-  sudo docker build --no-cache --force-rm -t infinispan-modules ../wildfly-modules
 }
 
 function start_server {
@@ -77,7 +76,6 @@ function cleanup {
   echo "==== Deleting build results ===="
   sudo docker rm infinispan-server-ci
   sudo docker rmi infinispan-server
-  sudo docker rmi infinispan-modules
   sudo docker rm dc
   sudo docker rm hc
 }
