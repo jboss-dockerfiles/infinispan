@@ -6,12 +6,13 @@ TEST_MGMT_PASS=pass1
 
 function pre_build_cleanup {
   echo "==== Pre build clean up (just in case some rubbish was left by the previous build) ===="
+  sudo docker rm -f hc dc infinispan-server-ci
   sudo docker rmi -f infinispan-server
 }
 
 function build_images {
   echo "==== Building images ===="
-  sudo docker build --no-cache --force-rm -t infinispan-server ../server
+  sudo docker build --no-cache --force-rm -t infinispan-server ../server || die "Error building the image"
 }
 
 function start_server {
