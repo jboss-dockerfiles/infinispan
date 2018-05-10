@@ -11,7 +11,7 @@ ENV INFINISPAN_VERSION 9.3.0.Alpha1
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
 # Server download location
-ENV DISTRIBUTION_URL https://repository.jboss.org/nexus/content/repositories/releases/org/infinispan/server/infinispan-server-build/$INFINISPAN_VERSION/infinispan-server-build-$INFINISPAN_VERSION.zip
+ENV DISTRIBUTION_URL https://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-server-$INFINISPAN_VERSION.zip
 
 # Labels
 LABEL name="Infinispan Server" \
