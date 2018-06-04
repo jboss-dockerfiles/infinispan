@@ -26,7 +26,7 @@ _tag_changes:
 
 _push_changes:
 ifeq ($(DRY_RUN), false)
-	git push $(PUSH_ORIGIN)
+	git push --tags $(PUSH_ORIGIN)
 else
 	$(info DRY_RUN is set to true. Skipping...)
 endif
