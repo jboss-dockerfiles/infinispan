@@ -1,13 +1,14 @@
 #!/bin/bash
 
 set -x
+set -e
 
 TEST_RESULT=0
 IMAGE_INSIDE_OPENSHIFT=""
 OPENSHIFT_COMPONENT_NAME=infinispan-ci-test
 
-OSE_MAIN_VERSION=v3.6.0
-OSE_SHA1_VERSION=c4dd4cf
+OSE_MAIN_VERSION=v3.9.0
+OSE_SHA1_VERSION=191fece
 
 function download_oc_client {
   echo "==== Installing OC Client ===="
