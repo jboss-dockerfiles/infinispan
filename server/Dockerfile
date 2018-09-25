@@ -10,8 +10,14 @@ ENV INFINISPAN_VERSION 9.4.0.CR3
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
-# Server download location
-ENV DISTRIBUTION_URL https://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-server-$INFINISPAN_VERSION.zip
+USER root
+
+# Download server
+ARG DISTRIBUTION_URL=https://downloads.jboss.org/infinispan/$INFINISPAN_VERSION/infinispan-server-$INFINISPAN_VERSION.zip
+ADD $DISTRIBUTION_URL /tmp
+
+# We cannot use mv
+RUN cp /tmp/*.zip /tmp/server.zip
 
 # Labels
 LABEL name="Infinispan Server" \
@@ -24,13 +30,13 @@ LABEL name="Infinispan Server" \
       io.openshift.tags="datagrid,java,jboss" \
       io.openshift.s2i.scripts-url="image:///usr/local/s2i/bin"
 
-# Download and extract the Infinispan Server
-USER root
+# Sha1sum
+ARG CHECK_HASH=true
+RUN if [[ $CHECK_HASH == "true" ]] ; then INFINISPAN_SHA=$(curl $DISTRIBUTION_URL.sha1); sha1sum /tmp/server.zip | grep $INFINISPAN_SHA ; fi
 
 ENV HOME /opt/jboss/
 
-RUN INFINISPAN_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUTION_URL && sha1sum /tmp/server.zip | grep $INFINISPAN_SHA \
-    && unzip -q /tmp/server.zip -d $HOME && mv $HOME/infinispan-server-* $HOME/infinispan-server && rm /tmp/server.zip \ 
+RUN unzip -q /tmp/server.zip -d $HOME && mv $HOME/infinispan-server-* $HOME/infinispan-server && rm /tmp/*.* \
     && chown -R 1000.0 /opt/jboss/infinispan-server/ \
     && chmod -R g+rw /opt/jboss/infinispan-server/ \
     && find /opt/jboss/infinispan-server/ -type d -exec chmod g+x {} +
@@ -46,5 +52,5 @@ COPY .s2i /usr/local/s2i
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Expose Infinispan server  ports 
+# Expose Infinispan server  ports
 EXPOSE 7600 8080 8181 8888 9990 11211 11222 57600
