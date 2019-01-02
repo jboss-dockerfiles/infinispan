@@ -17,8 +17,13 @@ function build_images {
 
 function start_server {
   echo "==== Starting the server ===="
-  SERVER_CONTAINER_ID=`sudo docker run -d --name infinispan-server-ci -e "APP_USER=user" -e "APP_PASS=changeme" infinispan-server -Djboss.default.jgroups.stack=tcp`
+  SERVER_CONTAINER_ID=`sudo docker run -d --name infinispan-server-ci -e "JAVA_OPTS=-Xms200m -Xmx400m" -e "APP_USER=user" -e "APP_PASS=changeme" infinispan-server -Djboss.default.jgroups.stack=tcp`
   [[ -z "$SERVER_CONTAINER_ID" ]] && die "Could not create the container"
+}
+
+function check_memory {
+ echo "==== Checking memory ===="
+ sudo docker exec infinispan-server-ci sh -c 'cat /proc/$(pgrep -P 1)/environ' | grep -E "Xms200m.*Xmx400m" || die "Container was not started with correct memory settings (Xmx and Xms)"
 }
 
 function start_domain_controller {
@@ -85,6 +90,7 @@ pre_build_cleanup
 build_images
 start_server
 wait_for_server_start
+check_memory
 stop_server
 start_domain_controller
 wait_for_server_start
