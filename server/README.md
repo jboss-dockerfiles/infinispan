@@ -6,8 +6,21 @@ Infinispan Docker image automatically scales Java heap (`Xmx` and `Xms`) to memo
  CGroups. The default behavior sets it to 50% of the container memory. This is a safe minimum that allows to
  use Infinispan with different configuration.
 
-This setting can be easily overridden by specifying `JAVA_OPTIONS` environmental variable with `Xmx` setting.
-In that case the automatic scaling scripts will use value specified by the user.
+Example, a container started with a limit of 2G:
+
+```
+docker run -it -m 2G jboss/infinispan-server
+```
+
+will cause Infinispan server to be started with a Xmx around 1G.
+
+This setting can be easily overridden by specifying `JAVA_OPTS` environmental variable with `Xmx` setting.
+In that case the automatic scaling scripts will use value specified by the user:
+
+```
+docker run -it -e "JAVA_OPTS=-Xms200m -Xmx3G" jboss/infinispan-server
+```
+
 
 ## Configuring authentication
 
