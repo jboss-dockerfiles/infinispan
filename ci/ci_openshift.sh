@@ -7,8 +7,8 @@ TEST_RESULT=0
 IMAGE_INSIDE_OPENSHIFT=""
 OPENSHIFT_COMPONENT_NAME=infinispan-ci-test
 
-OSE_MAIN_VERSION=v3.9.0
-OSE_SHA1_VERSION=191fece
+OSE_MAIN_VERSION=v3.11.0
+OSE_SHA1_VERSION=0cbc58b
 
 function download_oc_client {
   echo "==== Installing OC Client ===="
