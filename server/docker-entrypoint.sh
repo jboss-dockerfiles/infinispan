@@ -304,7 +304,7 @@ if [ "$CONTAINER_SETTINGS" == "true" ]
 then
   MEMORY_LIMIT="$(max_memory)"
   if [ "x$MEMORY_LIMIT" != x ]; then
-      if echo "${JAVA_OPTIONS}" | grep -q -- "-Xmx"; then
+      if echo "${JAVA_OPTS}" | grep -q -- "-Xmx"; then
         echo "Xmx explicitly set, skipping auto-correction"
       else
         # https://github.com/fabric8io-images/run-java-sh/blob/master/fish-pepper/run-java-sh/fp-files/java-default-options#L44
