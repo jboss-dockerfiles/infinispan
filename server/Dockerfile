@@ -1,11 +1,11 @@
 # Use latest jboss/base-jdk:8 image as the base
-FROM jboss/base-jdk:8
+FROM jboss/base-jdk:11
 
 # Set the INFINISPAN_SERVER_HOME env variable
 ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 10.0.0.Beta2
+ENV INFINISPAN_VERSION 10.0.0.Beta3
 
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
