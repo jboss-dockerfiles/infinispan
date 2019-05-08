@@ -5,7 +5,7 @@ FROM jboss/base-jdk:11
 ENV INFINISPAN_SERVER_HOME /opt/jboss/infinispan-server
 
 # Set the INFINISPAN_VERSION env variable
-ENV INFINISPAN_VERSION 9.4.11.Final
+ENV INFINISPAN_VERSION 9.4.13.Final
 
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
